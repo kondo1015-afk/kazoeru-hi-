@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-23",
+  "topicId": "traffic-light",
+  "title": "信号が変わるのを待っている時間の合計",
+  "lede": "1回はほんの数十秒。でも一生ぶん足すと、まとまった日数になります。",
+  "params": {
+    "perDay": 8,
+    "seconds": 45,
+    "years": 60
+  },
+  "headline": {
+    "value": 91.3125,
+    "unit": "日",
+    "label": "信号待ちに使う日数"
+  },
+  "generatedAt": "2026-09-24T15:26:47.726Z"
+}

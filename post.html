@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} — {{SITE_NAME}}</title>
+<meta name="description" content="{{LEDE}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{LEDE}}">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<style>{{CSS}}</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="masthead__left">
+      <a href="{{ROOT}}index.html">{{SITE_NAME}}</a>
+      <a class="tag" href="{{ROOT}}c/{{CATEGORY_ID}}.html">{{CATEGORY_NAME}}</a>
+    </span>
+    <time datetime="{{DATE}}">{{DATE}}</time>
+  </header>
+
+  <h1>{{TITLE}}</h1>
+  <p class="lede">{{LEDE}}</p>
+
+  <section class="hero">
+    <div class="readout">
+      <div class="readout__value" id="headline">{{HEADLINE_VALUE}}<span class="readout__unit">{{HEADLINE_UNIT}}</span></div>
+      <div class="readout__label" id="headlineLabel">{{HEADLINE_LABEL}}</div>
+    </div>
+    <div class="controls" id="controls"></div>
+  </section>
+
+  <figure class="chart" id="chart"></figure>
+
+  <div class="stats" id="stats"></div>
+
+  <ul class="notes" id="notes"></ul>
+
+  <nav class="archive">
+    <h2>「{{CATEGORY_NAME}}」のほかの回</h2>
+    <ol>{{ARCHIVE}}</ol>
+    <p class="archive__more"><a href="{{ROOT}}index.html">すべての回を見る</a></p>
+  </nav>
+
+  <p class="foot">つまみを動かすと、その場で計算し直します。数式はページに埋め込まれているので、通信は起きません。</p>
+</div>
+
+<script>
+const META = {{META_JSON}};
+const compute = {{COMPUTE_SRC}};
+
+const state = { ...{{PARAMS_JSON}} };
+
+// URL の #?startAge=25 形式から初期値を拾う（共有用）
+const hash = new URLSearchParams(location.hash.replace(/^#\??/, ''));
+for (const p of META.params) {
+  if (!hash.has(p.key)) continue;           // Number(null) が 0 になるので has で確かめる
+  const raw = hash.get(p.key).trim();
+  if (raw === '') continue;
+  const v = Number(raw);
+  if (Number.isFinite(v) && v >= p.min && v <= p.max) state[p.key] = v;
+}
+
+function trimZeros(s) { return s.indexOf('.') >= 0 ? s.replace(/\.?0+$/, '') : s; }
+
+// つまみの値はそのまま読めたほうがいいので、万・億に略さない
+function fmtParam(p, v) {
+  const dec = (String(p.step).split('.')[1] || '').length;
+  return v.toLocaleString('ja-JP', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+
+// param に atLeast / atMost を書いておくと、他のつまみとの大小を保つ
+function constrain(changedKey) {
+  for (const p of META.params) {
+    if (p.atLeast && state[p.key] < state[p.atLeast]) {
+      const target = p.key === changedKey ? p.atLeast : p.key;
+      const other  = p.key === changedKey ? p.key : p.atLeast;
+      state[target] = state[other];
+    }
+    if (p.atMost && state[p.key] > state[p.atMost]) {
+      const target = p.key === changedKey ? p.atMost : p.key;
+      const other  = p.key === changedKey ? p.key : p.atMost;
+      state[target] = state[other];
+    }
+    state[p.key] = Math.min(p.max, Math.max(p.min, state[p.key]));
+  }
+}
+
+function jpNum(v) {
+  if (!Number.isFinite(v)) return '∞';
+  const a = Math.abs(v);
+  if (a >= 1e12) return trimZeros((v / 1e12).toFixed(2)) + '兆';
+  if (a >= 1e8)  return trimZeros((v / 1e8).toFixed(2)) + '億';
+  if (a >= 1e4)  return trimZeros((v / 1e4).toFixed(2)) + '万';
+  if (a >= 100)  return Math.round(v).toLocaleString('ja-JP');
+  if (a >= 1)    return trimZeros((Math.round(v * 10) / 10).toFixed(1));
+  return trimZeros((Math.round(v * 100) / 100).toFixed(2));
+}
+
+function buildControls() {
+  const box = document.getElementById('controls');
+  box.innerHTML = '';
+  for (const p of META.params) {
+    const wrap = document.createElement('div');
+    wrap.className = 'control';
+
+    const top = document.createElement('div');
+    top.className = 'control__top';
+    const name = document.createElement('label');
+    name.className = 'control__name';
+    name.textContent = p.label;
+    name.htmlFor = 'c-' + p.key;
+    const val = document.createElement('span');
+    val.className = 'control__val';
+    val.id = 'v-' + p.key;
+    top.append(name, val);
+
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.id = 'c-' + p.key;
+    input.min = p.min; input.max = p.max; input.step = p.step;
+    input.value = state[p.key];
+    input.addEventListener('input', () => {
+      state[p.key] = Number(input.value);
+      constrain(p.key);
+      for (const q of META.params) {
+        const other = document.getElementById('c-' + q.key);
+        if (other && Number(other.value) !== state[q.key]) other.value = state[q.key];
+      }
+      update();
+    });
+
+    wrap.append(top, input);
+    box.append(wrap);
+  }
+}
+
+function drawChart(result) {
+  // MT を広めに取り、その空きに Y 軸の名前を置く（目盛りと重ならない）
+  const W = 720, H = 340, ML = 72, MR = 18, MT = 38, MB = 44;
+  const box = document.getElementById('chart');
+  const pts = result.series.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
+
+  const xsAll = pts.map(p => p.x);
+  if (pts.length < 2 || Math.min(...xsAll) === Math.max(...xsAll)) {
+    box.innerHTML = '<p class="chart__empty">この条件ではグラフになりません。つまみを動かしてみてください。</p>';
+    return;
+  }
+
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const y0 = 0, y1 = Math.max(...ys) || 1;
+
+  const sx = v => ML + (W - ML - MR) * (x1 === x0 ? 0 : (v - x0) / (x1 - x0));
+  const sy = v => H - MB - (H - MT - MB) * (v - y0) / (y1 - y0);
+
+  let grid = '', line = '', area = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = y0 + (y1 - y0) * i / 4, y = sy(v);
+    grid += `<line class="chart__grid" x1="${ML}" y1="${y}" x2="${W - MR}" y2="${y}"/>`;
+    grid += `<text class="chart__axis" x="${ML - 8}" y="${y + 4}" text-anchor="end">${jpNum(v)}</text>`;
+  }
+  for (let i = 0; i <= 4; i++) {
+    const v = x0 + (x1 - x0) * i / 4;
+    grid += `<text class="chart__axis" x="${sx(v)}" y="${H - MB + 20}" text-anchor="middle">${jpNum(v)}</text>`;
+  }
+
+  line = pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join('');
+  area = line + `L${sx(pts[pts.length - 1].x).toFixed(1)},${sy(0)}L${sx(pts[0].x).toFixed(1)},${sy(0)}Z`;
+
+  const last = pts[pts.length - 1];
+
+  box.innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${result.axis.x}に対する${result.axis.y}のグラフ">
+      <text class="chart__axis chart__axis--name" x="0" y="14" text-anchor="start">${result.axis.y}</text>
+      ${grid}
+      <path class="chart__area" d="${area}"/>
+      <path class="chart__line" d="${line}"/>
+      <circle class="chart__dot" cx="${sx(last.x).toFixed(1)}" cy="${sy(last.y).toFixed(1)}" r="4.5"/>
+      <text class="chart__axis chart__axis--name" x="${W}" y="${H - 4}" text-anchor="end">${result.axis.x}</text>
+    </svg>`;
+}
+
+function update() {
+  const r = compute(state);
+
+  document.getElementById('headline').innerHTML =
+    jpNum(r.headline.value) + '<span class="readout__unit">' + r.headline.unit + '</span>';
+  document.getElementById('headlineLabel').textContent = r.headline.label;
+
+  for (const p of META.params) {
+    const el = document.getElementById('v-' + p.key);
+    if (el) el.textContent = fmtParam(p, state[p.key]) + p.unit;
+  }
+
+  document.getElementById('stats').innerHTML = (r.stats || []).map(s =>
+    `<div class="stat"><div class="stat__label">${s.label}</div>
+     <div class="stat__value">${jpNum(s.value)}<span class="stat__unit">${s.unit}</span></div></div>`
+  ).join('');
+
+  document.getElementById('notes').innerHTML = (r.notes || []).map(n => `<li>${n}</li>`).join('');
+
+  drawChart(r);
+
+  // file:// で開いた場合など、履歴を書き換えられない環境では黙って諦める
+  try {
+    const q = new URLSearchParams();
+    for (const p of META.params) if (state[p.key] !== p.value) q.set(p.key, state[p.key]);
+    history.replaceState(null, '', q.toString() ? '#?' + q : location.pathname);
+  } catch (e) { /* 共有URLが更新されないだけ */ }
+}
+
+constrain(null);
+buildControls();
+update();
+</script>
+</body>
+</html>

@@ -51,9 +51,29 @@ node scripts/generate.mjs --topic yen-savings --force   # トピック指定
 node scripts/generate.mjs --date 2026-10-01             # 日付指定
 ```
 
+## 分類（カテゴリ）
+
+`scripts/categories.mjs` で3つ定義している。増やしたくなったらここに足す。
+
+| id | 名前 | 中身 |
+|---|---|---|
+| `stack` | 積み重ね | 小さいものが時間で膨らむ。人生を数える回もここ |
+| `money` | お金 | 払い方・家賃・習慣の差を金額にする |
+| `scale` | スケール | 単位換算、確率。物差しを変えて見る |
+
+トピックには `meta.category` に id を書く。書き忘れや存在しない id はビルドで落ちる。
+
+生成されるページ:
+
+```
+public/index.html        分類ごとに最新5本ずつ
+public/c/<id>.html       分類ごとの全一覧
+public/p/<日付>.html      記事
+```
+
 ## ネタを増やす
 
-`topics/` に `.mjs` を1つ足すだけ。ファイル名と `meta.id` を揃える。
+`topics/` に `.mjs` を1つ足すだけ。ファイル名と `meta.id` を揃え、`meta.category` に分類の id を書く。
 
 **`compute` の制約**（これを破るとビルドで落ちる）
 
