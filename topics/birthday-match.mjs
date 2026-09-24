@@ -2,7 +2,7 @@ export const meta = {
   id: 'birthday-match',
   title: '同じ誕生日の人が、その部屋にいる確率',
   lede: '365日あるのだから滅多に重ならない、と思いたくなります。実際は思っているよりずっと早く重なります。',
-  category: 'scale',
+  category: 'chance',
   params: [
     { key: 'people', label: '部屋にいる人数', min: 2,  max: 80,  step: 1, value: 23,  unit: '人' },
     { key: 'days',   label: '1年の日数',     min: 30, max: 700, step: 1, value: 365, unit: '日' },
