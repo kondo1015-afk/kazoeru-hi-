@@ -8,6 +8,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { loadTopics, TOPICS_DIR } from './lib.mjs';
+import { CATEGORIES } from './categories.mjs';
 
 const KEY = process.env.ANTHROPIC_API_KEY;
 if (!KEY) {
@@ -15,7 +16,14 @@ if (!KEY) {
   process.exit(1);
 }
 
-const existing = (await loadTopics()).map((t) => `- ${t.meta.id}: ${t.meta.title}`).join('\n');
+const all = await loadTopics();
+const existing = all.map((t) => `- [${t.meta.category}] ${t.meta.id}: ${t.meta.title}`).join('\n');
+const catList = CATEGORIES.map((c) => `- ${c.id}（${c.name}）: ${c.tagline}`).join('\n');
+
+// いちばん本数が少ないカテゴリを狙う
+const tally = new Map(CATEGORIES.map((c) => [c.id, 0]));
+for (const t of all) tally.set(t.meta.category, tally.get(t.meta.category) + 1);
+const wantCat = [...tally.entries()].sort((a, b) => a[1] - b[1])[0][0];
 
 const prompt = `あなたは「1日ひとつ、世界を数字で見る」というサイトのネタ出し担当です。
 新しいトピックを1つ考え、下の形式の JavaScript モジュールとして出力してください。
@@ -26,7 +34,11 @@ const prompt = `あなたは「1日ひとつ、世界を数字で見る」とい
   （例: 時間の積み重ね、距離、回数、確率、単位の換算）
 - 調べないと分からない数字を定数として書かない。分からない値はパラメータにする。
 - params は3〜4個。すべて range で動かせる数値にする。
+- meta.category は '${wantCat}' にする。
 - 日本語。説明的でなく、読んで「へえ」と思える切り口にする。
+
+分類:
+${catList}
 
 既にあるトピック（重複させない）:
 ${existing}
@@ -38,6 +50,7 @@ export const meta = {
   id: 'kebab-case-id',
   title: '…',
   lede: '…',
+  category: '${wantCat}',
   params: [
     { key: '…', label: '…', min: 0, max: 0, step: 0, value: 0, unit: '…' },
   ],
@@ -94,6 +107,6 @@ const out = mod.compute(Object.fromEntries(mod.meta.params.map((x) => [x.key, x.
 if (!Number.isFinite(out.headline.value)) throw new Error('headline.value が数値になりません');
 if (!Array.isArray(out.series) || out.series.length < 2) throw new Error('series が足りません');
 
-console.log(`下書き: topics/_drafts/${id}.mjs`);
+console.log(`下書き: topics/_drafts/${id}.mjs（分類: ${mod.meta.category}）`);
 console.log(`試算: ${out.headline.label} = ${out.headline.value} ${out.headline.unit}`);
 console.log('中身を読んで問題なければ topics/ に移してください。');

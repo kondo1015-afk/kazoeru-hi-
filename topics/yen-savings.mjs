@@ -9,6 +9,7 @@ export const meta = {
   id: 'yen-savings',
   title: '1日1円ずつ増やす貯金を続けたら',
   lede: '初日は1円、次の日は2円、その次は3円。毎日ちょっとずつ増やすだけの貯金は、どこまで育つのか。',
+  category: 'stack',
   params: [
     { key: 'startAge', label: '始める年齢', min: 0,  max: 60,  step: 1,   value: 20,  unit: '歳' },
     { key: 'endAge',   label: 'やめる年齢', min: 1,  max: 90,  step: 1,   value: 50,  unit: '歳', atLeast: 'startAge' },

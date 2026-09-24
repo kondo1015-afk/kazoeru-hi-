@@ -17,7 +17,10 @@
 <div class="wrap">
 
   <header class="masthead">
-    <a href="{{ROOT}}index.html">{{SITE_NAME}}</a>
+    <span class="masthead__left">
+      <a href="{{ROOT}}index.html">{{SITE_NAME}}</a>
+      <a class="tag" href="{{ROOT}}c/{{CATEGORY_ID}}.html">{{CATEGORY_NAME}}</a>
+    </span>
     <time datetime="{{DATE}}">{{DATE}}</time>
   </header>
 
@@ -39,8 +42,9 @@
   <ul class="notes" id="notes"></ul>
 
   <nav class="archive">
-    <h2>ほかの回</h2>
+    <h2>「{{CATEGORY_NAME}}」のほかの回</h2>
     <ol>{{ARCHIVE}}</ol>
+    <p class="archive__more"><a href="{{ROOT}}index.html">すべての回を見る</a></p>
   </nav>
 
   <p class="foot">つまみを動かすと、その場で計算し直します。数式はページに埋め込まれているので、通信は起きません。</p>

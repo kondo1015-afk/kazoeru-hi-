@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { CATEGORY_BY_ID } from './categories.mjs';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const TOPICS_DIR = path.join(ROOT, 'topics');
@@ -23,6 +24,10 @@ export async function loadTopics() {
     }
     if (mod.meta.id !== path.basename(file, '.mjs')) {
       throw new Error(`${file}: meta.id はファイル名と揃えてください`);
+    }
+    if (!CATEGORY_BY_ID.has(mod.meta.category)) {
+      const ids = [...CATEGORY_BY_ID.keys()].join(' / ');
+      throw new Error(`${file}: meta.category を ${ids} のどれかにしてください（今は ${mod.meta.category}）`);
     }
     topics.push({ file, meta: mod.meta, compute: mod.compute });
   }
