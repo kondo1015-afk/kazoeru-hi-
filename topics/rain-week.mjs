@@ -8,6 +8,15 @@ export const meta = {
     { key: 'days',  label: '日数',         min: 1, max: 30,  step: 1, value: 7,  unit: '日' },
     { key: 'least', label: '何日以上降るか', min: 1, max: 10,  step: 1, value: 1,  unit: '日' },
   ],
+
+  presetsLabel: 'よくある予報を入れる',
+  presets: [
+    { kind: 'variant', label: '毎日30%の1週間', values: { daily: 30, days: 7 } },
+    { kind: 'variant', label: '毎日50%の1週間', values: { daily: 50, days: 7 } },
+    { kind: 'variant', label: '毎日70%の1週間', values: { daily: 70, days: 7 } },
+    { kind: 'variant', label: '梅雨の1か月ぶん', values: { daily: 60, days: 30 } },
+    { kind: 'variant', label: '3日以上降るか',   values: { least: 3 } },
+  ],
 };
 
 export function compute(p) {

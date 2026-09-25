@@ -8,6 +8,14 @@ export const meta = {
     { key: 'years',   label: '住む年数',   min: 1,    max: 40,     step: 1,    value: 10,    unit: '年' },
     { key: 'rate',    label: '年利（運用した場合）', min: 0, max: 7, step: 0.1, value: 0,    unit: '%' },
   ],
+
+  presetsLabel: 'よくある条件を入れる',
+  presets: [
+    { kind: 'variant', label: '5千円の差・10年',     values: { monthly: 5000,  years: 10, rate: 0 } },
+    { kind: 'variant', label: '1万円の差・20年',     values: { monthly: 10000, years: 20, rate: 0 } },
+    { kind: 'variant', label: '3万円の差・30年',     values: { monthly: 30000, years: 30, rate: 0 } },
+    { kind: 'variant', label: '浮いたぶんを年利3%で', values: { rate: 3 } },
+  ],
 };
 
 export function compute(p) {

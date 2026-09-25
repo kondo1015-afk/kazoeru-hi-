@@ -8,6 +8,15 @@ export const meta = {
     { key: 'days',   label: '1年の日数',     min: 30, max: 700, step: 1, value: 365, unit: '日' },
     { key: 'target', label: '見たい確率',    min: 10, max: 99,  step: 1, value: 50,  unit: '%' },
   ],
+
+  presetsLabel: 'いろいろな集まりを入れる',
+  presets: [
+    { kind: 'variant', label: '30人のクラス',       values: { people: 30 } },
+    { kind: 'variant', label: '40人のクラス',       values: { people: 40 } },
+    { kind: 'variant', label: 'サッカー2チーム22人', values: { people: 22 } },
+    { kind: 'variant', label: '会社の部署 60人',    values: { people: 60 } },
+    { kind: 'variant', label: '火星の1年（687日）', values: { days: 687 } },
+  ],
 };
 
 export function compute(p) {

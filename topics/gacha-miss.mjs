@@ -8,6 +8,16 @@ export const meta = {
     { key: 'draws',      label: '引く回数',     min: 1,   max: 500, step: 1,   value: 100, unit: '回' },
     { key: 'confidence', label: '目安にする確率', min: 50,  max: 99,  step: 1,   value: 90,  unit: '%' },
   ],
+
+  presetsLabel: 'よくある排出率を入れる',
+  presets: [
+    { kind: 'variant', label: '排出率 0.6%',   values: { rate: 0.6 } },
+    { kind: 'variant', label: '排出率 1%',     values: { rate: 1 } },
+    { kind: 'variant', label: '排出率 3%',     values: { rate: 3 } },
+    { kind: 'variant', label: '排出率 6%',     values: { rate: 6 } },
+    { kind: 'variant', label: '10連ガチャ1回', values: { draws: 10 } },
+    { kind: 'variant', label: '天井300回ぶん', values: { draws: 300 } },
+  ],
 };
 
 export function compute(p) {

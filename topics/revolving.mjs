@@ -8,6 +8,14 @@ export const meta = {
     { key: 'apr',     label: '年利',       min: 0,     max: 18,      step: 0.5,   value: 15,     unit: '%' },
     { key: 'payment', label: '毎月の返済額', min: 20000, max: 100000, step: 1000,  value: 20000,  unit: '円' },
   ],
+
+  presetsLabel: 'よくある条件を入れる',
+  presets: [
+    { kind: 'variant', label: '30万円・年利15%',        values: { balance: 300000, apr: 15 } },
+    { kind: 'variant', label: '50万円・年利18%',        values: { balance: 500000, apr: 18 } },
+    { kind: 'variant', label: '返済額を1万円上げる',     values: { payment: 30000 } },
+    { kind: 'variant', label: '返済額を倍にする',        values: { payment: 40000 } },
+  ],
 };
 
 export function compute(p) {

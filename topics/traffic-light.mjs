@@ -8,6 +8,14 @@ export const meta = {
     { key: 'seconds', label: '1回の平均待ち時間',     min: 5,  max: 180, step: 5, value: 45, unit: '秒' },
     { key: 'years',   label: '数える年数',            min: 1,  max: 80,  step: 1, value: 60, unit: '年' },
   ],
+
+  presetsLabel: '通勤のかたちを入れる',
+  presets: [
+    { kind: 'variant', label: '徒歩中心（15回・40秒）',   values: { perDay: 15, seconds: 40 } },
+    { kind: 'variant', label: '車通勤（8回・60秒）',      values: { perDay: 8,  seconds: 60 } },
+    { kind: 'variant', label: '在宅がち（3回・45秒）',    values: { perDay: 3,  seconds: 45 } },
+    { kind: 'variant', label: '働く40年だけ数える',       values: { years: 40 } },
+  ],
 };
 
 export function compute(p) {

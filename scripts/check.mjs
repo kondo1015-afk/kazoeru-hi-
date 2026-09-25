@@ -44,7 +44,31 @@ for (const t of topics) {
   }
 
   // つまみ1つずつを min / 中間 / max に振って試す
+  // プリセットの中身を検証（存在しないキー・範囲外の値を弾く）
+  for (const pre of t.meta.presets ?? []) {
+    if (!pre.label) fail('presets に label がありません');
+    if (!['data', 'variant'].includes(pre.kind)) {
+      fail(`preset「${pre.label}」の kind を data か variant にしてください`);
+    }
+    if (pre.kind === 'data' && !(pre.source || t.meta.source)) {
+      fail(`preset「${pre.label}」は実データなので出典が要ります`);
+    }
+    for (const [k, v] of Object.entries(pre.values ?? {})) {
+      const prm = t.meta.params.find((x) => x.key === k);
+      if (!prm) { fail(`preset「${pre.label}」の ${k} は params にありません`); continue; }
+      if (!Number.isFinite(v) || v < prm.min || v > prm.max) {
+        fail(`preset「${pre.label}」の ${k}=${v} が ${prm.min}〜${prm.max} の外です`);
+      }
+    }
+  }
+  if ((t.meta.presets ?? []).some((x) => x.kind === 'data') && !t.meta.source) {
+    fail('実データのプリセットがあるのに meta.source がありません');
+  }
+
   const cases = [{ name: '初期値', p: defaults }];
+  for (const pre of t.meta.presets ?? []) {
+    cases.push({ name: `preset:${pre.label}`, p: { ...defaults, ...pre.values } });
+  }
   for (const prm of t.meta.params) {
     for (const [tag, v] of [['min', prm.min], ['mid', (prm.min + prm.max) / 2], ['max', prm.max]]) {
       cases.push({ name: `${prm.key}=${tag}`, p: { ...defaults, [prm.key]: v } });
@@ -122,7 +146,7 @@ function runInStubDom(script, hash = '') {
   function el(tag = 'div') {
     const node = {
       tagName: tag, innerHTML: '', textContent: '', value: '',
-      className: '', id: '', type: '', htmlFor: '',
+      className: '', id: '', type: '', htmlFor: '', href: '', rel: '', hidden: false,
       children: [],
       append(...cs) { this.children.push(...cs); },
       addEventListener() {},
@@ -132,7 +156,7 @@ function runInStubDom(script, hash = '') {
     return node;
   }
   const byId = new Map();
-  for (const id of ['headline', 'headlineLabel', 'controls', 'chart', 'stats', 'notes']) {
+  for (const id of ['headline', 'headlineLabel', 'controls', 'chart', 'stats', 'notes', 'presets']) {
     byId.set(id, el());
   }
   const document = {

@@ -35,6 +35,8 @@
     <div class="controls" id="controls"></div>
   </section>
 
+  <div class="presets" id="presets"></div>
+
   <figure class="chart" id="chart"></figure>
 
   <div class="stats" id="stats"></div>
@@ -102,6 +104,54 @@ function jpNum(v) {
   return trimZeros((Math.round(v * 100) / 100).toFixed(2));
 }
 
+function syncInputs() {
+  for (const q of META.params) {
+    const el = document.getElementById('c-' + q.key);
+    if (el && Number(el.value) !== state[q.key]) el.value = state[q.key];
+  }
+}
+
+// meta.presets があれば、実データを一発で入れるボタンを出す
+function buildPresets() {
+  const box = document.getElementById('presets');
+  if (!box) return;
+  if (!META.presets || !META.presets.length) { box.hidden = true; return; }
+
+  const head = document.createElement('span');
+  head.className = 'presets__label';
+  head.textContent = META.presetsLabel || '実データを入れる';
+  box.append(head);
+
+  for (const pre of META.presets) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'preset' + (pre.kind === 'data' ? ' preset--data' : '');
+    b.textContent = pre.label;
+    b.addEventListener('click', () => {
+      for (const k in pre.values) if (k in state) state[k] = pre.values[k];
+      constrain(null);
+      syncInputs();
+      update();
+    });
+    box.append(b);
+  }
+
+  if (META.source) {
+    const s = document.createElement('p');
+    s.className = 'presets__source';
+    if (META.source.url) {
+      const a = document.createElement('a');
+      a.href = META.source.url;
+      a.textContent = META.source.text;
+      a.rel = 'noopener';
+      s.append('出典: ', a);
+    } else {
+      s.textContent = '出典: ' + META.source.text;
+    }
+    box.append(s);
+  }
+}
+
 function buildControls() {
   const box = document.getElementById('controls');
   box.innerHTML = '';
@@ -128,10 +178,7 @@ function buildControls() {
     input.addEventListener('input', () => {
       state[p.key] = Number(input.value);
       constrain(p.key);
-      for (const q of META.params) {
-        const other = document.getElementById('c-' + q.key);
-        if (other && Number(other.value) !== state[q.key]) other.value = state[q.key];
-      }
+      syncInputs();
       update();
     });
 
@@ -217,6 +264,7 @@ function update() {
 
 constrain(null);
 buildControls();
+buildPresets();
 update();
 </script>
 </body>

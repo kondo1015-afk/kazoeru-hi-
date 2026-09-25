@@ -92,6 +92,34 @@ public/p/<日付>.html      記事
 
 `atMost` も同じように使える。
 
+### プリセット（全トピックに付ける）
+
+つまみの値を一発で入れ替えるボタン。**数値を `compute` に埋め込まない**ための仕組みでもある。
+計算式は純粋なまま保たれ、数字が更新されたときも `presets` だけ直せばよい。
+
+種類は2つ。`kind` は必須。
+
+```js
+presetsLabel: '実際の歩数を入れる',
+presets: [
+  // data: 公的統計など。出典が必須。ページ上では ◆ 付きで色が変わる
+  { kind: 'data',    label: '成人男性の平均 7,763歩', values: { steps: 7763 } },
+  // variant: 「40人のクラス」「年利3%」など、よくある条件。出典は不要
+  { kind: 'variant', label: '1日1万歩',              values: { steps: 10000 } },
+],
+source: { text: '厚生労働省「…」', url: 'https://…' },
+```
+
+`check.mjs` が弾くもの:
+
+- `kind` の書き忘れ、`data` なのに出典が無い
+- `params` に無いキー、範囲外の値
+- プリセットを当てた状態で計算が壊れないか（全通り試す）
+
+実例は `topics/train-delay.mjs`（data）と `topics/birthday-match.mjs`（variant）。
+
+`data` に使うのは、出典を明示できる公的統計に限ること。AI に数値を書かせない。
+
 ### AI にネタを出させる
 
 ```bash

@@ -16,6 +16,14 @@ export const meta = {
     { key: 'first',    label: '初日に入れる額', min: 1, max: 100, step: 1, value: 1,   unit: '円' },
     { key: 'step',     label: '1日ごとの増加額', min: 0, max: 10, step: 0.5, value: 1, unit: '円' },
   ],
+
+  presetsLabel: 'よくある条件を入れる',
+  presets: [
+    { kind: 'variant', label: '1円ずつ増やす（20〜50歳）', values: { startAge: 20, endAge: 50, first: 1, step: 1 } },
+    { kind: 'variant', label: '毎日100円の定額',           values: { first: 100, step: 0 } },
+    { kind: 'variant', label: '社会人まるごと（22〜65歳）', values: { startAge: 22, endAge: 65 } },
+    { kind: 'variant', label: '10年だけ（30〜40歳）',       values: { startAge: 30, endAge: 40 } },
+  ],
 };
 
 export function compute(p) {
