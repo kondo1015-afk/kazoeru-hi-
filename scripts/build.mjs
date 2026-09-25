@@ -115,7 +115,7 @@ for (const c of CATEGORIES) {
       CATEGORY_NAME: escapeHtml(c.name),
       CATEGORY_LEDE: escapeHtml(c.lede),
       COUNT: String(list.length),
-      TABS: tabs('', c.id),
+      TABS: tabs('../', c.id),
       ARCHIVE: list.length
         ? rows(list, '../')
         : '<li class="archive__empty">この分類はまだ1本もありません。</li>',

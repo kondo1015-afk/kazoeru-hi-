@@ -135,6 +135,41 @@ if (!existsSync(samplePage)) {
   }
 }
 
+// ---- 3. リンク切れの検査 ---------------------------------------------
+
+if (existsSync(PUBLIC_DIR)) {
+  const { readdir } = await import('node:fs/promises');
+
+  async function walk(dir) {
+    const out = [];
+    for (const e of await readdir(dir, { withFileTypes: true })) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) out.push(...(await walk(full)));
+      else if (e.name.endsWith('.html')) out.push(full);
+    }
+    return out;
+  }
+
+  const pages = await walk(PUBLIC_DIR);
+  console.log(`\nリンクを検査します（${pages.length} ページ）\n`);
+
+  let links = 0, broken = 0;
+  for (const page of pages) {
+    const html = await readFile(page, 'utf8');
+    for (const m of html.matchAll(/href="([^"]+)"/g)) {
+      const href = m[1];
+      if (/^(https?:|mailto:|#)/.test(href)) continue;   // 外部リンクは対象外
+      links++;
+      const target = path.resolve(path.dirname(page), href.split('#')[0]);
+      if (!existsSync(target)) {
+        fail(`${path.relative(PUBLIC_DIR, page)} → ${href} が見つかりません`);
+        broken++;
+      }
+    }
+  }
+  if (broken === 0) ok(`サイト内リンク ${links} 本 すべて有効`);
+}
+
 console.log('');
 if (failed > 0) { console.error(`${failed} 件の問題があります`); process.exit(1); }
 console.log('問題なし');

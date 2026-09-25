@@ -23,7 +23,14 @@ public/               静的サイト → GitHub Pages
 3. Settings → Actions → General → Workflow permissions を **Read and write** に
 4. Actions タブから `daily` を手動実行して動作確認
 
-以降は毎朝6時（JST）に勝手に回る。
+以降は毎朝6時（JST）に勝手に回る。**1日に増えるのは1本だけ**で、直近で使っていないトピックから順に選ばれる。
+トピックが19本あるので、一巡するのに19日かかる。
+
+すぐもう1本足したいときは、日付を指定して手で作る:
+
+```bash
+node scripts/generate.mjs --date 2026-09-26 --topic test-accuracy
+```
 
 ## ローカルで試す
 
@@ -43,6 +50,7 @@ npx serve public                   # 確認
 - ビルド済みページの JavaScript を簡易DOM上で実際に動かし、
   見出し・グラフ・つまみの表示が初期値どおりになるか
 - 共有URL（`#?key=value`）を開いたとき、指定していないつまみが動かないか
+- サイト内リンクがすべて実在するファイルを指しているか（404 の作り込み防止）
 
 便利なオプション:
 
