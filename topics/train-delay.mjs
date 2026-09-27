@@ -1,8 +1,8 @@
 export const meta = {
   id: 'train-delay',
-  title: '今週いちども電車が遅れない確率',
+  title: 'もしも今週いちども電車が遅れなかったら',
   lede: '遅延証明書が出る日は、路線によってまるで違います。実際の発行日数を入れて、5日間の通勤を無傷で乗り切れる見込みを出します。',
-  category: 'chance',
+  category: 'you',
   params: [
     { key: 'rate',        label: '1日に遅延が出る確率', min: 0,   max: 100, step: 0.5, value: 50,  unit: '%' },
     { key: 'streak',      label: '連続で数える日数',    min: 1,   max: 30,  step: 1,   value: 5,   unit: '日' },

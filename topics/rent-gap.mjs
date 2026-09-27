@@ -1,8 +1,8 @@
 export const meta = {
   id: 'rent-gap',
-  title: '家賃を1万円下げると、何年でいくら浮くのか',
+  title: 'もしも家賃を1万円下げたら',
   lede: '毎月の差は小さく見えても、住み続ける年数を掛けると桁が変わります。浮いたぶんを寝かせずに運用した場合も試せます。',
-  category: 'money',
+  category: 'you',
   params: [
     { key: 'monthly', label: '月の差額',   min: 1000, max: 100000, step: 1000, value: 10000, unit: '円' },
     { key: 'years',   label: '住む年数',   min: 1,    max: 40,     step: 1,    value: 10,    unit: '年' },

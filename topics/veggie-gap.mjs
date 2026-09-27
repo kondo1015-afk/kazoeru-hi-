@@ -1,8 +1,8 @@
 export const meta = {
   id: 'veggie-gap',
-  title: '野菜の「あと少し」を積み上げると何kgか',
+  title: 'もしも野菜の「あと少し」を積み上げたら',
   lede: '1日にあと90g。小鉢ひとつぶんの差が、何年か続くとどれくらいの量になるのか。',
-  category: 'stack',
+  category: 'you',
   params: [
     { key: 'now',    label: '今の1日の摂取量', min: 50,  max: 600, step: 0.1, value: 258.7, unit: 'g' },
     { key: 'target', label: '目標',           min: 100, max: 500, step: 10,  value: 350,   unit: 'g' },

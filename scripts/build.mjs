@@ -9,8 +9,10 @@ import {
 } from './lib.mjs';
 import { CATEGORIES, CATEGORY_BY_ID } from './categories.mjs';
 
-const SITE_NAME = '数える日';
-const SITE_TAGLINE = '1日ひとつ、世界を数字で見る';
+const SITE_NAME = 'もしも';
+// お問い合わせフォームのURL。Googleフォームを作ったらここを差し替える。
+const CONTACT_URL = 'https://forms.gle/REPLACE-ME';
+const SITE_TAGLINE = 'もしも、を計算してみる';
 const TOP_PER_CATEGORY = 5;   // トップに並べるカテゴリごとの本数
 
 const topics = await loadTopics();
@@ -26,6 +28,7 @@ const css = await readFile(path.join(TEMPLATES_DIR, 'site.css'), 'utf8');
 const postTpl = await readFile(path.join(TEMPLATES_DIR, 'post.html'), 'utf8');
 const indexTpl = await readFile(path.join(TEMPLATES_DIR, 'index.html'), 'utf8');
 const catTpl = await readFile(path.join(TEMPLATES_DIR, 'category.html'), 'utf8');
+const pageTpl = await readFile(path.join(TEMPLATES_DIR, 'page.html'), 'utf8');
 
 await rm(PUBLIC_DIR, { recursive: true, force: true });
 await mkdir(path.join(PUBLIC_DIR, 'p'), { recursive: true });
@@ -54,6 +57,18 @@ function rows(list, rootPrefix, limit = 40) {
       <span class="archive__title">${escapeHtml(p.title)}</span>
       <span class="archive__num">${jpNum(p.headline.value)}${escapeHtml(p.headline.unit)}</span>
     </a></li>`).join('');
+}
+
+function footer(rootPrefix) {
+  return `<footer class="sitefoot">
+    <nav class="sitefoot__nav">
+      <a href="${rootPrefix}index.html">トップ</a>
+      <a href="${rootPrefix}about.html">このサイトについて</a>
+      <a href="${rootPrefix}privacy.html">プライバシーポリシー</a>
+      <a href="${CONTACT_URL}" rel="noopener">お問い合わせ</a>
+    </nav>
+    <p class="sitefoot__note">計算はすべてページ内で完結します。入力した値がどこかに送られることはありません。統計を使った回には出典を添えています。</p>
+  </footer>`;
 }
 
 function tabs(rootPrefix, activeId) {
@@ -97,6 +112,7 @@ for (const post of posts) {
     PARAMS_JSON: JSON.stringify(post.params),
     COMPUTE_SRC: src,
     ARCHIVE: rows(sameCat, '../', 12),
+    FOOTER: footer('../'),
     CSS: css,
   });
 
@@ -116,6 +132,7 @@ for (const c of CATEGORIES) {
       CATEGORY_LEDE: escapeHtml(c.lede),
       COUNT: String(list.length),
       TABS: tabs('../', c.id),
+      FOOTER: footer('../'),
       ARCHIVE: list.length
         ? rows(list, '../')
         : '<li class="archive__empty">この分類はまだ1本もありません。</li>',
@@ -148,9 +165,35 @@ await writeFile(
     SITE_TAGLINE: escapeHtml(SITE_TAGLINE),
     COUNT: String(built),
     SECTIONS: sections,
+    FOOTER: footer(''),
     CSS: css,
   })
 );
+
+// ---- 固定ページ ----------------------------------------------------------
+
+const staticDir = path.join(TEMPLATES_DIR, 'static');
+const { readdir } = await import('node:fs/promises');
+for (const file of (await readdir(staticDir)).filter((f) => f.endsWith('.html'))) {
+  const raw = await readFile(path.join(staticDir, file), 'utf8');
+  const title = raw.match(/<!--title:\s*(.*?)-->/)?.[1]?.trim();
+  const desc = raw.match(/<!--desc:\s*(.*?)-->/)?.[1]?.trim() ?? '';
+  if (!title) throw new Error(`templates/static/${file}: 先頭に <!--title: …--> を書いてください`);
+
+  const body = raw.replace(/<!--(title|desc):[\s\S]*?-->/g, '').trim();
+
+  await writeFile(
+    path.join(PUBLIC_DIR, file),
+    render(pageTpl, {
+      SITE_NAME: escapeHtml(SITE_NAME),
+      PAGE_TITLE: escapeHtml(title),
+      PAGE_DESC: escapeHtml(desc),
+      BODY: body.replaceAll('{{CONTACT_URL}}', CONTACT_URL),
+      FOOTER: footer(''),
+      CSS: css,
+    })
+  );
+}
 
 await writeFile(path.join(PUBLIC_DIR, '.nojekyll'), '');
 

@@ -1,8 +1,8 @@
 export const meta = {
   id: 'lottery-weekly',
-  title: '毎週買い続けたら、一生のうち一度は当たるのか',
+  title: 'もしも毎週買い続けたら',
   lede: '続けていればいつかは、と思いたくなります。確率を積み上げるとどうなるかを見てみます。',
-  category: 'chance',
+  category: 'you',
   params: [
     { key: 'odds',   label: '当たる確率（○分の1）', min: 1000, max: 20000000, step: 1000, value: 10000000, unit: '分の1' },
     { key: 'tickets', label: '1回に買う枚数',       min: 1,    max: 50,       step: 1,    value: 3,        unit: '枚' },

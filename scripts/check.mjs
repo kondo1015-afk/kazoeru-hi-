@@ -10,7 +10,9 @@ import path from 'node:path';
 import { loadTopics, defaultsOf, PUBLIC_DIR } from './lib.mjs';
 
 let failed = 0;
+let warned = 0;
 function fail(msg) { console.error('  NG  ' + msg); failed++; }
+function warn(msg) { console.warn('  △   ' + msg); warned++; }   // 止めないが知らせる
 function ok(msg) { console.log('  ok  ' + msg); }
 
 // ---- 1. トピックの検査 ---------------------------------------------------
@@ -168,11 +170,18 @@ if (existsSync(PUBLIC_DIR)) {
     }
   }
   if (broken === 0) ok(`サイト内リンク ${links} 本 すべて有効`);
+
+  // お問い合わせ先の差し替え忘れ
+  const home = await readFile(path.join(PUBLIC_DIR, 'index.html'), 'utf8');
+  if (home.includes('REPLACE-ME')) {
+    warn('お問い合わせフォームのURLが未設定です（scripts/build.mjs の CONTACT_URL）');
+  }
 }
 
 console.log('');
 if (failed > 0) { console.error(`${failed} 件の問題があります`); process.exit(1); }
-console.log('問題なし');
+if (warned > 0) console.log(`問題なし（気になる点が ${warned} 件）`);
+else console.log('問題なし');
 
 // ---- 簡易DOM ------------------------------------------------------------
 

@@ -1,8 +1,8 @@
 export const meta = {
   id: 'hourly-wage',
-  title: 'その買い物は、何時間ぶんの労働か',
+  title: 'もしも値段を労働時間で数えたら',
   lede: '値段を円ではなく時間で見ると、買うかどうかの判断が少し変わります。',
-  category: 'money',
+  category: 'you',
   params: [
     { key: 'price',   label: '買いたい物の値段', min: 100,    max: 500000,  step: 100,   value: 30000,  unit: '円' },
     { key: 'income',  label: '月の手取り',      min: 100000, max: 1000000, step: 10000, value: 250000, unit: '円' },

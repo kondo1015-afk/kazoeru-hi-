@@ -1,8 +1,8 @@
 export const meta = {
   id: 'walk-the-earth',
-  title: '毎日の歩数だけで地球を1周するには',
+  title: 'もしも毎日の歩数だけで地球を1周するなら',
   lede: '赤道ぞいに地球を1周すると40,075km。いつもの歩数を積み上げるだけなら、何年かかるのか。',
-  category: 'stack',
+  category: 'you',
   params: [
     { key: 'steps',    label: '1日の歩数',   min: 1000, max: 30000, step: 1,   value: 8000, unit: '歩' },
     { key: 'stride',   label: '歩幅',       min: 40,   max: 90,    step: 1,   value: 65,   unit: 'cm' },

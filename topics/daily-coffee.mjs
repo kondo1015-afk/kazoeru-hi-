@@ -1,8 +1,8 @@
 export const meta = {
   id: 'daily-coffee',
-  title: '毎日の一杯をやめると、何年で何が買えるか',
+  title: 'もしも毎日の一杯をやめたら',
   lede: '1杯200円は安い買い物です。ただ、続く前提で見ると額の桁が変わります。',
-  category: 'money',
+  category: 'you',
   params: [
     { key: 'price', label: '1杯の値段',   min: 50, max: 800, step: 10, value: 200, unit: '円' },
     { key: 'days',  label: '週に飲む日数', min: 1,  max: 7,   step: 1,  value: 5,   unit: '日' },

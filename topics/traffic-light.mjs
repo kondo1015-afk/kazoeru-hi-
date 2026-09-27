@@ -1,8 +1,8 @@
 export const meta = {
   id: 'traffic-light',
-  title: '信号が変わるのを待っている時間の合計',
+  title: 'もしも信号待ちの時間を全部まとめたら',
   lede: '1回はほんの数十秒。でも一生ぶん足すと、まとまった日数になります。',
-  category: 'stack',
+  category: 'you',
   params: [
     { key: 'perDay',  label: '1日に信号待ちする回数', min: 1,  max: 30,  step: 1, value: 8,  unit: '回' },
     { key: 'seconds', label: '1回の平均待ち時間',     min: 5,  max: 180, step: 5, value: 45, unit: '秒' },

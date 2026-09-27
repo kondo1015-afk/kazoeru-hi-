@@ -3,10 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{CATEGORY_NAME}} — {{SITE_NAME}}</title>
-<meta name="description" content="{{CATEGORY_LEDE}}">
-<meta property="og:title" content="{{CATEGORY_NAME}} — {{SITE_NAME}}">
-<meta property="og:description" content="{{CATEGORY_LEDE}}">
+<title>{{PAGE_TITLE}} — {{SITE_NAME}}</title>
+<meta name="description" content="{{PAGE_DESC}}">
+<meta name="robots" content="index, follow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
@@ -15,18 +14,15 @@
 <body>
 <div class="wrap">
   <header class="masthead">
-    <a href="../index.html">{{SITE_NAME}}</a>
-    <span>{{COUNT}}回</span>
+    <a href="index.html">{{SITE_NAME}}</a>
+    <span>{{PAGE_TITLE}}</span>
   </header>
 
-  <h1>{{CATEGORY_NAME}}</h1>
-  <p class="lede">{{CATEGORY_LEDE}}</p>
+  <h1>{{PAGE_TITLE}}</h1>
 
-  <nav class="cattabs">{{TABS}}</nav>
-
-  <nav class="archive" style="border-top:none;padding-top:0">
-    <ol>{{ARCHIVE}}</ol>
-  </nav>
+  <div class="prose">
+{{BODY}}
+  </div>
 
   {{FOOTER}}
 </div>

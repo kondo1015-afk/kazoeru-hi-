@@ -1,6 +1,6 @@
-# 数える日
+# もしも
 
-1日ひとつ、世界を数字で見るサイト。GitHub Actions が毎朝1本生成し、GitHub Pages に出す。
+「もしも」を1日ひとつ計算してみるサイト。GitHub Actions が毎朝1本生成し、GitHub Pages に出す。
 
 ## 仕組み
 
@@ -59,15 +59,30 @@ node scripts/generate.mjs --topic yen-savings --force   # トピック指定
 node scripts/generate.mjs --date 2026-10-01             # 日付指定
 ```
 
+## 固定ページ
+
+`templates/static/*.html` に置いたものが、そのまま `public/<名前>.html` になる。
+先頭に `<!--title: …-->` と `<!--desc: …-->` を書くこと（title は必須）。
+
+今あるもの:
+
+| ファイル | 公開先 | 用途 |
+|---|---|---|
+| `about.html` | `/about.html` | サイトの趣旨、計算の方針、運営者、問い合わせ |
+| `privacy.html` | `/privacy.html` | 個人情報、Cookie、広告、免責事項 |
+
+どちらも AdSense の審査で見られる。本文中の `{{CONTACT_URL}}` は、
+`scripts/build.mjs` の `CONTACT_URL` に置き換わる。**Googleフォームを作ったらここを差し替える。**
+未設定のあいだは `check.mjs` が警告を出す（止まりはしない）。
+
 ## 分類（カテゴリ）
 
 `scripts/categories.mjs` で3つ定義している。増やしたくなったらここに足す。
 
 | id | 名前 | 中身 |
 |---|---|---|
-| `stack` | 積み重ね | 小さいものが時間で膨らむ。距離や時間の換算もここ |
-| `money` | お金 | 払い方・家賃・習慣の差を金額にする |
-| `chance` | 確率 | 直感とズレる数字。ガチャ、天気、偶然の一致 |
+| `you` | もしもあなたが | 自分の毎日。習慣、お金、身のまわりの確率 |
+| `world` | もしも世界が | 前提をひとつ変える。星、重力、人数、倍々に増えるもの |
 
 トピックには `meta.category` に id を書く。書き忘れや存在しない id はビルドで落ちる。
 

@@ -1,8 +1,8 @@
 export const meta = {
   id: 'revolving',
-  title: '毎月いくらずつ返すと、利息はいくら付くのか',
+  title: 'もしも毎月の返済額を上げたら',
   lede: '返す額を少し上げるだけで、完済までの期間と利息の合計が大きく変わります。その差を見るための計算です。',
-  category: 'money',
+  category: 'you',
   params: [
     { key: 'balance', label: '残高',       min: 50000, max: 1000000, step: 10000, value: 300000, unit: '円' },
     { key: 'apr',     label: '年利',       min: 0,     max: 18,      step: 0.5,   value: 15,     unit: '%' },

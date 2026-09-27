@@ -1,8 +1,8 @@
 export const meta = {
   id: 'book-pages',
-  title: '毎日1ページだけ読むと、生涯で何冊になるか',
+  title: 'もしも毎日1ページだけ読み続けたら',
   lede: '1ページなら寝る前の数分で終わります。それを何十年か続けたら、本棚がどれくらい埋まるのか。',
-  category: 'stack',
+  category: 'you',
   params: [
     { key: 'pages',    label: '1日に読むページ数', min: 1,   max: 100, step: 1,  value: 5,   unit: 'ページ' },
     { key: 'perBook',  label: '1冊のページ数',     min: 100, max: 600, step: 10, value: 250, unit: 'ページ' },

@@ -1,8 +1,8 @@
 export const meta = {
   id: 'subscription',
-  title: 'サブスクを1本減らすと、20年でいくら浮くのか',
+  title: 'もしもサブスクを1本減らしたら',
   lede: '月に千円。単体では気にならない額が、本数と年数を掛けるとまとまった金額になります。',
-  category: 'money',
+  category: 'you',
   params: [
     { key: 'monthly', label: '1本あたりの月額', min: 300, max: 5000, step: 100, value: 1000, unit: '円' },
     { key: 'count',   label: '契約している本数', min: 1,   max: 15,   step: 1,   value: 4,    unit: '本' },

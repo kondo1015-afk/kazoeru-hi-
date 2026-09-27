@@ -1,8 +1,8 @@
 export const meta = {
   id: 'tooth-brushing',
-  title: '一生のうち、歯を磨いている時間',
+  title: 'もしも歯を磨いた時間を全部まとめたら',
   lede: '1回3分。日課すぎて意識しませんが、まとめると何日ぶんになるのか。',
-  category: 'stack',
+  category: 'you',
   params: [
     { key: 'perDay',  label: '1日に磨く回数', min: 1, max: 5,  step: 1,   value: 2,  unit: '回' },
     { key: 'minutes', label: '1回の時間',     min: 1, max: 10, step: 0.5, value: 3,  unit: '分' },

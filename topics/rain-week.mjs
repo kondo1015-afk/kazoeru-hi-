@@ -1,8 +1,8 @@
 export const meta = {
   id: 'rain-week',
-  title: '降水確率30%の日が7日続くと、何日降るのか',
+  title: 'もしも降水確率30%の日が7日続いたら',
   lede: '1日だけ見れば「たぶん降らない」。でも1週間ぶん並べると、印象がかなり変わります。',
-  category: 'chance',
+  category: 'you',
   params: [
     { key: 'daily', label: '1日の降水確率', min: 0, max: 100, step: 1, value: 30, unit: '%' },
     { key: 'days',  label: '日数',         min: 1, max: 30,  step: 1, value: 7,  unit: '日' },

@@ -1,8 +1,8 @@
 export const meta = {
   id: 'salt-intake',
-  title: '食塩を1日1g減らすと、生涯で何kgぶんになるか',
+  title: 'もしも食塩を1日1g減らしたら',
   lede: '1gはひとつまみ。毎日のことなので、何十年か足すと袋で数えられる量になります。',
-  category: 'stack',
+  category: 'you',
   params: [
     { key: 'now',    label: '今の1日の食塩摂取量', min: 3, max: 20, step: 0.1, value: 9.6, unit: 'g' },
     { key: 'target', label: '目指す量',           min: 3, max: 15, step: 0.1, value: 7,   unit: 'g', atMost: 'now' },

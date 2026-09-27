@@ -1,8 +1,8 @@
 export const meta = {
   id: 'gacha-miss',
-  title: '排出率3%を100回引いて、一度も出ない確率',
+  title: 'もしも100回引いて一度も出なかったら',
   lede: '100回も引けばさすがに出る、と思いたくなります。実際にどれくらいの見込みなのかを出してみます。',
-  category: 'chance',
+  category: 'you',
   params: [
     { key: 'rate',       label: '排出率',       min: 0.1, max: 20,  step: 0.1, value: 3,   unit: '%' },
     { key: 'draws',      label: '引く回数',     min: 1,   max: 500, step: 1,   value: 100, unit: '回' },

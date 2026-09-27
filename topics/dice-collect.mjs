@@ -1,8 +1,8 @@
 export const meta = {
   id: 'dice-collect',
-  title: 'サイコロの全部の目が出そろうまで、何回振るか',
+  title: 'もしもサイコロの全部の目をそろえるなら',
   lede: '6面あるのだから6回ちょっと、とはいきません。最後の1つがなかなか出てこないからです。',
-  category: 'chance',
+  category: 'you',
   params: [
     { key: 'faces', label: '面の数',       min: 2, max: 100, step: 1, value: 6, unit: '面' },
     { key: 'want',  label: 'そろえたい種類数', min: 1, max: 100, step: 1, value: 6, unit: '種', atMost: 'faces' },

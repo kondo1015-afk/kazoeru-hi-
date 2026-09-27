@@ -1,8 +1,8 @@
 export const meta = {
   id: 'test-accuracy',
-  title: '精度99%の検査で陽性。本当に該当する確率は',
+  title: 'もしも精度99%の検査で陽性だったら',
   lede: '99%と聞くと、ほぼ確定に思えます。ところが、めったにないことを調べる検査では話が変わります。',
-  category: 'chance',
+  category: 'you',
   params: [
     { key: 'prevalence', label: '該当する人の割合', min: 0.01, max: 50,  step: 0.01, value: 1,  unit: '%' },
     { key: 'sens',       label: '感度（見つける力）', min: 50,   max: 100, step: 0.1,  value: 99, unit: '%' },
