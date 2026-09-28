@@ -2,7 +2,7 @@ name: daily
 
 on:
   schedule:
-    - cron: '0 21 * * *'
+    - cron: '0 21 * * *'   # UTC 21:00 = JST 06:00
   workflow_dispatch:
 
 permissions:
@@ -24,11 +24,20 @@ jobs:
         with:
           node-version: '20'
 
+      - name: 日本語フォントを入れる
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk
+
+      - name: 依存を入れる
+        run: npm install --no-audit --no-fund
+
       - name: generate
         run: node scripts/generate.mjs
 
       - name: build
         run: node scripts/build.mjs
+
+      - name: OGP画像をPNGにする
+        run: node scripts/render-og.mjs
 
       - name: check
         run: node scripts/check.mjs
