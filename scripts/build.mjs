@@ -16,7 +16,7 @@ const SITE_URL = 'https://kondo1015-afk.github.io/moshimo';
 // OGP画像に埋め込むフォント名。GitHub Actions では fonts-noto-cjk が入る。
 const OG_FONT = 'Noto Sans CJK JP';
 // お問い合わせフォームのURL。Googleフォームを作ったらここを差し替える。
-const CONTACT_URL = 'https://forms.gle/REPLACE-ME';
+const CONTACT_URL = 'https://forms.gle/jZCRpodspRQjraN37';
 const SITE_TAGLINE = 'もしも、を計算してみる';
 const TOP_PER_CATEGORY = 5;   // トップに並べるカテゴリごとの本数
 
