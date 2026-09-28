@@ -1,0 +1,16 @@
+{
+  "name": "moshimo",
+  "private": true,
+  "type": "module",
+  "description": "「もしも」を1日ひとつ計算するサイト",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "build": "node scripts/build.mjs",
+    "render": "node scripts/render-og.mjs",
+    "check": "node scripts/check.mjs",
+    "all": "npm run generate && npm run build && npm run render && npm run check"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}

@@ -59,6 +59,34 @@ node scripts/generate.mjs --topic yen-savings --force   # トピック指定
 node scripts/generate.mjs --date 2026-10-01             # 日付指定
 ```
 
+## OGP画像
+
+記事1本につき1枚、1200×630 のカード画像を自動生成する。
+XやLINEにURLを貼ったときに出るあの画像で、あるかないかでクリック率がかなり変わる。
+
+```
+build.mjs      → public/og/<日付>.svg   （SVGで組み立てる）
+render-og.mjs  → public/og/<日付>.png   （resvg で PNG に変換）
+```
+
+XのカードはSVGに対応していないのでPNGが要る。変換には `@resvg/resvg-js` と
+日本語フォントを使う。GitHub Actions では `fonts-noto-cjk` を入れている。
+
+ローカルで画像まで作るなら:
+
+```bash
+npm install
+npm run all      # generate → build → render → check
+```
+
+`npm install` していなければ `render-og.mjs` は警告だけ出して飛ばす。サイト自体は動く。
+
+**公開先URLを変えたときは `scripts/build.mjs` の `SITE_URL` も直すこと。**
+OGP画像は絶対URLで指定する必要があり、ここが違うと画像が出ない。
+
+見た目を変えるなら `scripts/og-image.mjs`。タイトルの折り返しは、
+句読点で区切ってから行数を決めて均等に割っている。
+
 ## 固定ページ
 
 `templates/static/*.html` に置いたものが、そのまま `public/<名前>.html` になる。

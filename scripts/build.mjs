@@ -8,8 +8,13 @@ import {
   PUBLIC_DIR, TEMPLATES_DIR,
 } from './lib.mjs';
 import { CATEGORIES, CATEGORY_BY_ID } from './categories.mjs';
+import { ogSvg } from './og-image.mjs';
 
 const SITE_NAME = 'もしも';
+// 公開先のURL。末尾にスラッシュを付けない。OGP画像の絶対URLに使う。
+const SITE_URL = 'https://kondo1015-afk.github.io/moshimo';
+// OGP画像に埋め込むフォント名。GitHub Actions では fonts-noto-cjk が入る。
+const OG_FONT = 'Noto Sans CJK JP';
 // お問い合わせフォームのURL。Googleフォームを作ったらここを差し替える。
 const CONTACT_URL = 'https://forms.gle/REPLACE-ME';
 const SITE_TAGLINE = 'もしも、を計算してみる';
@@ -33,6 +38,7 @@ const pageTpl = await readFile(path.join(TEMPLATES_DIR, 'page.html'), 'utf8');
 await rm(PUBLIC_DIR, { recursive: true, force: true });
 await mkdir(path.join(PUBLIC_DIR, 'p'), { recursive: true });
 await mkdir(path.join(PUBLIC_DIR, 'c'), { recursive: true });
+await mkdir(path.join(PUBLIC_DIR, 'og'), { recursive: true });
 
 function jpNum(v) {
   if (!Number.isFinite(v)) return '∞';
@@ -97,9 +103,24 @@ for (const post of posts) {
   const cat = CATEGORY_BY_ID.get(topic.meta.category);
   const sameCat = posts.filter((p) => p.date !== post.date && catOf(p) === cat.id);
 
+  await writeFile(
+    path.join(PUBLIC_DIR, 'og', `${post.date}.svg`),
+    ogSvg({
+      siteName: SITE_NAME,
+      title: post.title,
+      value: jpNum(result.headline.value),
+      unit: result.headline.unit,
+      label: result.headline.label,
+      category: cat.name,
+      fontFamily: OG_FONT,
+    })
+  );
+
   const html = render(postTpl, {
     SITE_NAME: escapeHtml(SITE_NAME),
     ROOT: '../',
+    OG_IMAGE: `${SITE_URL}/og/${post.date}.png`,
+    OG_URL: `${SITE_URL}/p/${post.date}.html`,
     DATE: post.date,
     TITLE: escapeHtml(post.title),
     LEDE: escapeHtml(post.lede),

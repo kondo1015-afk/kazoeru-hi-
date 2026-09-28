@@ -171,6 +171,23 @@ if (existsSync(PUBLIC_DIR)) {
   }
   if (broken === 0) ok(`サイト内リンク ${links} 本 すべて有効`);
 
+  // OGP画像が揃っているか
+  const postPages = pages.filter((f) => f.includes(`${path.sep}p${path.sep}`));
+  let missingOg = 0;
+  for (const page of postPages) {
+    const html = await readFile(page, 'utf8');
+    const url = html.match(/property="og:image" content="([^"]+)"/)?.[1];
+    if (!url) { fail(`${path.basename(page)}: og:image がありません`); continue; }
+    if (url.includes('REPLACE') || !/^https?:\/\//.test(url)) {
+      fail(`${path.basename(page)}: og:image が絶対URLになっていません`);
+      continue;
+    }
+    const local = path.join(PUBLIC_DIR, 'og', path.basename(new URL(url).pathname));
+    if (!existsSync(local)) missingOg++;
+  }
+  if (missingOg > 0) warn(`OGP画像のPNGが ${missingOg} 枚ありません（npm install してから render-og.mjs）`);
+  else if (postPages.length) ok(`OGP画像 ${postPages.length} 枚 そろっています`);
+
   // お問い合わせ先の差し替え忘れ
   const home = await readFile(path.join(PUBLIC_DIR, 'index.html'), 'utf8');
   if (home.includes('REPLACE-ME')) {
