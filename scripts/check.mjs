@@ -193,6 +193,28 @@ if (existsSync(PUBLIC_DIR)) {
   if (missingOg > 0) warn(`OGP画像のPNGが ${missingOg} 枚ありません（npm install してから render-og.mjs）`);
   else if (postPages.length) ok(`OGP画像 ${postPages.length} 枚 そろっています`);
 
+  // サイトマップが全ページを網羅しているか
+  const smPath = path.join(PUBLIC_DIR, 'sitemap.xml');
+  if (!existsSync(smPath)) fail('sitemap.xml がありません');
+  else {
+    const sm = await readFile(smPath, 'utf8');
+    const listed = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    // サイトマップに載っているURLが実在するか
+    for (const u of listed) {
+      const rel = new URL(u).pathname.replace(/^\/[^/]+\//, '');
+      const file = rel === '' ? 'index.html' : rel;
+      if (!existsSync(path.join(PUBLIC_DIR, file))) fail(`sitemap.xml の ${u} は実在しません`);
+    }
+    // 逆に、載せ忘れたページがないか
+    const missing = pages.filter((p) => {
+      const rel = path.relative(PUBLIC_DIR, p).split(path.sep).join('/');
+      return !listed.some((u) => u.endsWith('/' + rel) || (rel === 'index.html' && u.endsWith('/')));
+    });
+    if (missing.length) {
+      warn(`sitemap.xml に載っていないページが ${missing.length} 件`);
+    } else ok(`sitemap.xml ${listed.length} 件 すべて有効`);
+  }
+
   // お問い合わせ先の差し替え忘れ
   const home = await readFile(path.join(PUBLIC_DIR, 'index.html'), 'utf8');
   if (home.includes('REPLACE-ME')) {

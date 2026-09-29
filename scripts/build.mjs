@@ -14,11 +14,11 @@ const SITE_NAME = 'もしも';
 // 公開先のURL。末尾にスラッシュを付けない。OGP画像の絶対URLに使う。
 const SITE_URL = 'https://kondo1015-afk.github.io/moshimo';
 // Google Analytics の測定ID。空にすれば解析タグは一切入らない。
-const GA_ID = 'G-SGZCKHV2R3';
+const GA_ID = 'G-8N6Z4CWWFZ';
 // OGP画像に埋め込むフォント名。GitHub Actions では fonts-noto-cjk が入る。
 const OG_FONT = 'Noto Sans CJK JP';
 // お問い合わせフォームのURL。Googleフォームを作ったらここを差し替える。
-const CONTACT_URL = 'https://forms.gle/REPLACE-ME';
+const CONTACT_URL = 'https://forms.gle/H8sCBbLvrzXc1Nca9';
 const SITE_TAGLINE = 'もしも、を計算してみる';
 const TOP_PER_CATEGORY = 5;   // トップに並べるカテゴリごとの本数
 
@@ -249,6 +249,47 @@ for (const file of (await readdir(staticDir)).filter((f) => f.endsWith('.html'))
     })
   );
 }
+
+// ---- サイトマップと robots.txt ------------------------------------------
+// 検索エンジンにページの一覧と更新日を伝える。記事が増えるたび自動で作り直される。
+
+const urls = [
+  { loc: `${SITE_URL}/`, lastmod: posts[0]?.date, priority: '1.0', freq: 'daily' },
+  ...CATEGORIES.map((c) => ({
+    loc: `${SITE_URL}/c/${c.id}.html`,
+    lastmod: posts.find((p) => catOf(p) === c.id)?.date,
+    priority: '0.7', freq: 'daily',
+  })),
+  ...posts.map((p) => ({
+    loc: `${SITE_URL}/p/${p.date}.html`,
+    lastmod: p.date, priority: '0.8', freq: 'monthly',
+  })),
+  { loc: `${SITE_URL}/about.html`, priority: '0.4', freq: 'yearly' },
+  { loc: `${SITE_URL}/privacy.html`, priority: '0.2', freq: 'yearly' },
+];
+
+await writeFile(
+  path.join(PUBLIC_DIR, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url>
+    <loc>${u.loc}</loc>${u.lastmod ? `
+    <lastmod>${u.lastmod}</lastmod>` : ''}
+    <changefreq>${u.freq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>
+`
+);
+
+await writeFile(
+  path.join(PUBLIC_DIR, 'robots.txt'),
+  `User-agent: *
+Allow: /
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`
+);
 
 await writeFile(path.join(PUBLIC_DIR, '.nojekyll'), '');
 
