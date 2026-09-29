@@ -8,15 +8,17 @@ import {
   PUBLIC_DIR, TEMPLATES_DIR,
 } from './lib.mjs';
 import { CATEGORIES, CATEGORY_BY_ID } from './categories.mjs';
-import { ogSvg } from './og-image.mjs';
+import { ogSvg, siteOgSvg } from './og-image.mjs';
 
 const SITE_NAME = 'もしも';
 // 公開先のURL。末尾にスラッシュを付けない。OGP画像の絶対URLに使う。
 const SITE_URL = 'https://kondo1015-afk.github.io/moshimo';
+// Google Analytics の測定ID。空にすれば解析タグは一切入らない。
+const GA_ID = 'G-SGZCKHV2R3';
 // OGP画像に埋め込むフォント名。GitHub Actions では fonts-noto-cjk が入る。
 const OG_FONT = 'Noto Sans CJK JP';
 // お問い合わせフォームのURL。Googleフォームを作ったらここを差し替える。
-const CONTACT_URL = 'https://forms.gle/jZCRpodspRQjraN37';
+const CONTACT_URL = 'https://forms.gle/REPLACE-ME';
 const SITE_TAGLINE = 'もしも、を計算してみる';
 const TOP_PER_CATEGORY = 5;   // トップに並べるカテゴリごとの本数
 
@@ -63,6 +65,18 @@ function rows(list, rootPrefix, limit = 40) {
       <span class="archive__title">${escapeHtml(p.title)}</span>
       <span class="archive__num">${jpNum(p.headline.value)}${escapeHtml(p.headline.unit)}</span>
     </a></li>`).join('');
+}
+
+// GA_ID が空なら何も出さない（解析を止めたいときはIDを消すだけでよい）
+function analytics() {
+  if (!GA_ID) return '';
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${GA_ID}');
+</script>`;
 }
 
 function footer(rootPrefix) {
@@ -134,6 +148,7 @@ for (const post of posts) {
     COMPUTE_SRC: src,
     ARCHIVE: rows(sameCat, '../', 12),
     FOOTER: footer('../'),
+    ANALYTICS: analytics(),
     CSS: css,
   });
 
@@ -145,6 +160,11 @@ for (const post of posts) {
 
 for (const c of CATEGORIES) {
   const list = posts.filter((p) => catOf(p) === c.id);
+
+  await writeFile(
+    path.join(PUBLIC_DIR, 'og', `c-${c.id}.svg`),
+    siteOgSvg({ siteName: SITE_NAME, headline: c.name, sub: c.tagline, fontFamily: OG_FONT })
+  );
   await writeFile(
     path.join(PUBLIC_DIR, 'c', `${c.id}.html`),
     render(catTpl, {
@@ -154,6 +174,9 @@ for (const c of CATEGORIES) {
       COUNT: String(list.length),
       TABS: tabs('../', c.id),
       FOOTER: footer('../'),
+      ANALYTICS: analytics(),
+      OG_URL: `${SITE_URL}/c/${c.id}.html`,
+      OG_IMAGE: `${SITE_URL}/og/c-${c.id}.png`,
       ARCHIVE: list.length
         ? rows(list, '../')
         : '<li class="archive__empty">この分類はまだ1本もありません。</li>',
@@ -180,6 +203,11 @@ const sections = CATEGORIES.map((c) => {
 }).join('');
 
 await writeFile(
+  path.join(PUBLIC_DIR, 'og', 'site.svg'),
+  siteOgSvg({ siteName: SITE_NAME, headline: SITE_TAGLINE, sub: 'もしもあなたが ／ もしも世界が　毎日ひとつ更新', fontFamily: OG_FONT })
+);
+
+await writeFile(
   path.join(PUBLIC_DIR, 'index.html'),
   render(indexTpl, {
     SITE_NAME: escapeHtml(SITE_NAME),
@@ -187,6 +215,9 @@ await writeFile(
     COUNT: String(built),
     SECTIONS: sections,
     FOOTER: footer(''),
+    ANALYTICS: analytics(),
+    OG_URL: `${SITE_URL}/`,
+    OG_IMAGE: `${SITE_URL}/og/site.png`,
     CSS: css,
   })
 );
@@ -209,8 +240,11 @@ for (const file of (await readdir(staticDir)).filter((f) => f.endsWith('.html'))
       SITE_NAME: escapeHtml(SITE_NAME),
       PAGE_TITLE: escapeHtml(title),
       PAGE_DESC: escapeHtml(desc),
+      OG_URL: `${SITE_URL}/${file}`,
+      OG_IMAGE: `${SITE_URL}/og/site.png`,
       BODY: body.replaceAll('{{CONTACT_URL}}', CONTACT_URL),
       FOOTER: footer(''),
+      ANALYTICS: analytics(),
       CSS: css,
     })
   );

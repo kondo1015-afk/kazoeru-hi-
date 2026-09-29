@@ -107,11 +107,16 @@ if (!existsSync(samplePage)) {
 
   for (const f of files) {
     const html = await readFile(path.join(samplePage, f), 'utf8');
-    const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
-    if (!script) { fail(`${f}: script が見つかりません`); continue; }
+    // 解析タグなど他の <script> も入るので、記事本体のものを選ぶ
+    const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+      .map((m) => m[1])
+      .find((code) => code.includes('const META ='));
+    if (!script) { fail(`${f}: 記事の script が見つかりません`); continue; }
 
     // 素のページ / つまみを1つだけ指定した共有URL、の両方で試す
-    const meta = JSON.parse(script.match(/const META = (\{[\s\S]*?\});\n/)[1]);
+    const metaMatch = script.match(/const META = (\{[\s\S]*?\});\n/);
+    if (!metaMatch) { fail(`${f}: META を読み取れません`); continue; }
+    const meta = JSON.parse(metaMatch[1]);
     const first = meta.params[0];
     const cases = [
       { label: '', hash: '' },

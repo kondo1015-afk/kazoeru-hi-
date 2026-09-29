@@ -107,3 +107,36 @@ export function ogSvg(o) {
         font-size="26" fill="${accent}">${esc(o.category)}</text>
 </svg>`;
 }
+
+/**
+ * トップページ・分類ページ用のカード画像。記事と違って数値がないので、
+ * サイト名とキャッチを大きく出す。
+ */
+export function siteOgSvg(o) {
+  const paper = '#e9edf0';
+  const card = '#fcfdfd';
+  const ink = '#14222e';
+  const muted = '#61707c';
+  const line = '#c9d3da';
+  const accent = '#0f7b6c';
+
+  const heads = wrap(o.headline, 11, 2);
+  const headSize = heads.length >= 2 ? 88 : 96;
+  const tspans = heads
+    .map((l, i) => `<tspan x="80" dy="${i === 0 ? 0 : Math.round(headSize * 1.3)}">${esc(l)}</tspan>`)
+    .join('');
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+  <rect width="${W}" height="${H}" fill="${paper}"/>
+  <rect x="28" y="28" width="${W - 56}" height="${H - 56}" fill="${card}" stroke="${line}" stroke-width="2"/>
+
+  <text x="80" y="118" font-family="${esc(o.fontFamily)}" font-size="30" fill="${muted}" letter-spacing="3">${esc(o.siteName)}</text>
+  <line x1="80" y1="140" x2="${W - 80}" y2="140" stroke="${line}" stroke-width="1"/>
+
+  <text x="80" y="${heads.length >= 2 ? 290 : 340}" font-family="${esc(o.fontFamily)}" font-size="${headSize}"
+        font-weight="600" fill="${ink}">${tspans}</text>
+
+  <rect x="80" y="${H - 148}" width="130" height="7" fill="${accent}"/>
+  <text x="80" y="${H - 96}" font-family="${esc(o.fontFamily)}" font-size="32" fill="${muted}">${esc(o.sub)}</text>
+</svg>`;
+}
