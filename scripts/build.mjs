@@ -126,6 +126,8 @@ for (const post of posts) {
       unit: result.headline.unit,
       label: result.headline.label,
       category: cat.name,
+      // 日付の偶奇で、答えを見せる日と伏せる日を1日おきに切り替える
+      hideValue: Number(post.date.slice(-2)) % 2 === 1,
       fontFamily: OG_FONT,
     })
   );

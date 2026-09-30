@@ -43,8 +43,16 @@ function wrap(text, maxPerLine, maxLines) {
         if (w + cw > target && head) break;
         head += ch; w += cw;
       }
-      lines.push(head);
-      cur = cur.slice(head.length);
+      // カタカナ語や英数字の途中で切らないよう、語の先頭まで戻す
+      const wordChar = (c) => /[\u30a1-\u30fca-zA-Z0-9]/.test(c);
+      let cut = head.length;
+      if (cut < cur.length && wordChar(cur[cut]) && wordChar(cur[cut - 1])) {
+        let back = cut;
+        while (back > 1 && wordChar(cur[back - 1])) back--;
+        if (back > 0) cut = back;
+      }
+      lines.push(cur.slice(0, cut));
+      cur = cur.slice(cut);
     }
   }
   if (cur) lines.push(cur);
@@ -79,9 +87,10 @@ export function ogSvg(o) {
   const titleTop = 168;
 
   // 数値が長いほど小さくする（はみ出し防止）
-  const valueText = o.value + o.unit;
+  // hideValue が真なら答えを伏せる（A/Bテスト用。日付の偶奇で切り替わる）
+  const valueText = o.hideValue ? '？' + o.unit : o.value + o.unit;
   const vw = [...valueText].reduce((a, c) => a + (/[\x20-\x7e]/.test(c) ? 0.58 : 1), 0);
-  const valueSize = Math.min(140, Math.floor(980 / Math.max(vw, 1)));
+  const valueSize = o.hideValue ? 190 : Math.min(140, Math.floor(980 / Math.max(vw, 1)));
 
   const titleTspans = titleLines
     .map((l, i) => `<tspan x="80" dy="${i === 0 ? 0 : Math.round(titleSize * 1.34)}">${esc(l)}</tspan>`)
